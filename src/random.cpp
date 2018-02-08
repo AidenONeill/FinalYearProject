@@ -5,42 +5,23 @@
  * Created on 2nd December 2017, 18:41
  */
 
-#include "Casino/random.h"
-
 #include <windows.h>
 #include <iostream>
-
-unsigned int getRandomUint()
-{
-  unsigned int r;
-
-  HMODULE hLib=LoadLibrary("ADVAPI32.DLL");
-  if (hLib) {
-   BOOLEAN (APIENTRY *pfn)(void*, ULONG) =
-        (BOOLEAN (APIENTRY *)(void*,ULONG))GetProcAddress(hLib,"SystemFunction036");
-   if (pfn) {
-    char buff[4];
-    ULONG ulCbBuff = sizeof(buff);
-    if(pfn(buff,ulCbBuff)) {
-
-     r = buff[0] + 256 * buff[1] + 256 * 256 * buff[2] + 256 * 256 * 256 * buff[3];
-
-    }
-   }
-
-   FreeLibrary(hLib);
-  }
-
-  return r;
-}
-
+#include <random>
+#include <time.h>
+#include <functional>
 
 double getRandom()
 {
-  return getRandomUint() / 4294967296.0;
+ srand ( time(0)*time(0) );
+ 
+     double d = rand() / (RAND_MAX + 1.);
+     
+     if(d<0.0 || d>1.0){
+         getRandom();
+     }
+     else return d;
+
+
 }
 
-int getRandom(int low, int high)
-{
-  return getRandomUint() % (high - low + 1) + low;
-}

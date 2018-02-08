@@ -18,7 +18,9 @@ using namespace std;
 
 void decideRandomBot(){
      string path =  "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/bots/bot2.txt";
+    
     double d = getRandom();
+    cout << d <<endl;
         if (d>=0.30){                   //calls 70% of the time
             writeToFile("c", path);
             cout << "Random Bot c\n";

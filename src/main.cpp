@@ -25,10 +25,10 @@ using namespace std;
 
 int main(){
         
-            myBotDecision();
-            decideCallBot();
-        
-        
+//            myBotDecision();
+//            decideCallBot();
+//        
+    decideRandomBot();
 
 //    decideFoldBot();
 }
