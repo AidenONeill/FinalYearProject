@@ -17,18 +17,28 @@
 #include "foldBot.h"
 #include "HandEval/omp/EquityCalculator.h"
 #include <iostream>
+#include <string>
+#include <thread>
 
 #include "myBot.h"
 #include "readWrite.h"
-
 using namespace std;
 
 int main(){
         
-//            myBotDecision();
-//            decideCallBot();
-//        
-    decideRandomBot();
+        
+       
+        std::thread td1(myBotDecision);
+        std::thread td2(decideCallBot);
+        std::cout << "Started 2 threads. Waiting for them to finish..." << std::endl;
+        td1.join();
+        td2.join();             
+
+   
+    
+//    cout << checkForTurn(path) << endl;
+//    cout << checkForRiver(path) << endl;
+   // decideRandomBot();
 
 //    decideFoldBot();
 }

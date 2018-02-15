@@ -12,6 +12,8 @@
 #include "Casino/random.h"
 #include <stdlib.h>
 #include <conio.h>
+#include <chrono>
+#include <thread>
 #include "readWrite.h"
 #include "callBot.h"
 
@@ -21,17 +23,22 @@ using namespace std;
 
 void decideCallBot(){
     string path = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/bots/bot2.txt";
+    string boardPath = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/playAreaPathOdd2.txt";
+        
+    while(handInPlay(boardPath)){    
+    std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 10 + 1));
     double d = getRandom();
         if (d>=0.05) //calls 95% of the time
         {
             writeToFile("c", path);
-            cout << "Call Bot c\n";
+//            cout << "Call Bot c\n";
         }
          else // folds 5% of the time
         {
             writeToFile("f", path);
-            cout << "Call Bot f\n";
+//            cout << "Call Bot f\n";
         }
     }
+}
 
 

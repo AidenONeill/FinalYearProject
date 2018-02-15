@@ -28,7 +28,10 @@
 #include <iostream>
 #include "readWrite.h"
 #include <string>
+#include <chrono>
+#include <thread>
 #include "handStrength.h"
+#include "Casino/random.h"
 
 
 using namespace std;
@@ -42,6 +45,19 @@ double getPotOdds(const double& x){
     double d =  4 /(x + 4); 
     return d;
 }
+
+void preFlopDecision(int handStr, const std::string& botPath){
+    
+    if(handStr < 35){
+        writeToFile("r",botPath);
+    }
+    else if(handStr <85){
+         writeToFile("c",botPath);
+    }
+    else{
+        writeToFile("f",botPath);        
+    } 
+}
 void myBotDecision(){
     
     string boardPath = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/playAreaPathOdd2.txt";
@@ -51,43 +67,75 @@ void myBotDecision(){
     std::vector<int> hand (2);
     std::vector<int> board (5); 
     hand = getCardHand(botPath);
-    cout << getPotAmount(boardPath) << endl;
-    cout << getPotOdds(getPotAmount(boardPath)) << endl;
+//    cout << "Pot Amount: " << getPotAmount(boardPath) << endl;
+//    cout << "Pot Odds: " << getPotOdds(getPotAmount(boardPath)) << endl;
     int handStr = eval2Card(convertHandToString(hand));
     cout << handStr << endl;
-    if(handStr < 35){
-        writeToFile("r",botPath);
-    }
-    else if(handStr <85){
-         writeToFile("c",botPath);
-    }
-    else{
-        writeToFile("f",botPath);        
-    }    
+    double d = 0;
+    if(!checkForFlop(boardPath)){
+        cout << "Hit here" << endl;
+            preFlopDecision(handStr, botPath);
+        }
     
-    //flop
-    h = Hand::empty();
-    board = getCardsFlop(boardPath);   
-    h += Hand(hand.at(0))+Hand(hand.at(1))+Hand(board.at(0))+Hand(board.at(1))+Hand(board.at(2)); //checks 5 cards
+    while(handInPlay(boardPath)){
         
-    //turn
-    h = Hand::empty();
-    board = getCardsTurn(boardPath);
-    h += Hand(hand.at(0))+Hand(hand.at(1))+Hand(board.at(0))+Hand(board.at(1))+Hand(board.at(2))+Hand(board.at(3)); //checks 6 cards
-    double d =normaliseHand(eval.evaluate(h));
-    writeToFile("r",botPath);
-    //river
-    h = Hand::empty();
-    board = getCardsRiver(boardPath);     
-    h += Hand(hand.at(0))+Hand(hand.at(1))+Hand(board.at(0))+Hand(board.at(1))+Hand(board.at(2))+Hand(board.at(3))+Hand(board.at(4));  //checks 7 cards  
-    writeToFile("r",botPath);
-    convertHand(hand.at(0),hand.at(1));
-    convertBoard(board.at(0),board.at(1),board.at(2),board.at(3),board.at(4));
-    d =normaliseHand(eval.evaluate(h));
-    
-    cout << "Hand Strength With River "<< (eval.evaluate(h)) << endl;
-    cout << "Normalise Hand "<< d << "%" << endl;
-    
-}
+//        std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 10 + 1));
+        if(checkForFlop(boardPath) && !checkForTurn(boardPath) ){
+            cout << "Found Flop" <<endl;
+            h = Hand::empty();
+            board = getCardsFlop(boardPath);   
+            h += Hand(hand.at(0))+Hand(hand.at(1))+Hand(board.at(0))+Hand(board.at(1))+Hand(board.at(2)); //checks 5 cards
+            cout << "Normalised Hand: " << normaliseHand(eval.evaluate(h)) << endl;
+            d =normaliseHand(eval.evaluate(h))/getPotOdds(getPotAmount(boardPath));
+        }
+        if(checkForTurn(boardPath) && !checkForRiver(boardPath)){
+            cout << "Found Turn" <<endl;
+            h = Hand::empty();
+            board = getCardsTurn(boardPath);
+            h += Hand(hand.at(0))+Hand(hand.at(1))+Hand(board.at(0))+Hand(board.at(1))+Hand(board.at(2))+Hand(board.at(3)); //checks 6 cards
+            cout << "Normalised Hand: " << normaliseHand(eval.evaluate(h)) << endl;
+            d =normaliseHand(eval.evaluate(h))/getPotOdds(getPotAmount(boardPath));               
+        }        
+        if(checkForRiver(boardPath)){
+            cout << "Found River" <<endl;
+             h = Hand::empty();
+            board = getCardsRiver(boardPath);     
+            h += Hand(hand.at(0))+Hand(hand.at(1))+Hand(board.at(0))+Hand(board.at(1))+Hand(board.at(2))+Hand(board.at(3))+Hand(board.at(4));  //checks 7 cards
+            cout << "Normalised Hand: " << normaliseHand(eval.evaluate(h)) << endl;
+            d = normaliseHand(eval.evaluate(h))/getPotOdds(getPotAmount(boardPath));
+        }
+        
+        if(d>5){   
+            cout << "If Hit " << d << endl;
+                writeToFile("r", botPath);
+        }
+        else if(d>2.5){
+            cout << "else If 1 hit: " << d << endl;       
+                writeToFile("c", botPath);            
+        }       
+        else if(d>0 && d<1.8){
+            cout << "else If 2 hit: " << d << endl;
+            double  bluff = getRandom();
+            if(bluff>0.94){
+                writeToFile("c", botPath);
+            }
+            else{
+                writeToFile("f", botPath);
+            }
+        }       
+        else if(d<0){
+            cout << "Hit Else" << endl;
+            writeToFile("f", botPath);
+        }
+        
+        
+        
+        
+        
+        
+    }
+    }       
+ 
+  
 
 

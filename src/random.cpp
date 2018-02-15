@@ -21,7 +21,5 @@ double getRandom()
          getRandom();
      }
      else return d;
-
-
 }
 

@@ -15,13 +15,12 @@ void writeToFile(const std::string& input ,const std::string& path) {
   ofstream myfile;
   myfile.open (path);
   if (myfile.is_open()) {
-  cout << input <<endl;
   myfile << input;
   myfile.close();
   }
   else{ 
   myfile.close();
-  cout << "TESTING" << endl;
+  cout << "Error Opening File, ensure path is correct" << endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 10 + 1));
     writeToFile(input, path);
     }
@@ -53,6 +52,66 @@ vector<int> getCardHand(const std::string& path) {
     hand.at(0)= c1;
     hand.at(1)= c2;    
     return hand;  
+}
+bool checkForFlop(const std::string& path){
+  ifstream infile;
+  string STRING;
+  bool flopFound = false;
+  infile.open (path);
+  if (infile.is_open()){
+    while (getline(infile,STRING)){
+        if(STRING.find("Current ") != string::npos){ 
+            flopFound = false;
+              }
+        if(STRING.find("*** FLOP ***") != string::npos){ 
+            flopFound = true;
+              }
+        if(STRING.find("won") != string::npos){ 
+            flopFound = false;
+              } 
+    }
+}
+  return flopFound;
+}
+bool checkForTurn(const std::string& path){
+   ifstream infile;
+  string STRING;
+  bool turnFound = false;
+  infile.open (path);
+  if (infile.is_open()){
+    while (getline(infile,STRING)){
+        if(STRING.find("Current ") != string::npos){ 
+            turnFound = false;
+              }
+        if(STRING.find("*** TURN ***") != string::npos){ 
+            turnFound = true;
+              }
+        if(STRING.find("won") != string::npos){ 
+            turnFound = false;
+              } 
+    }
+}
+  return turnFound;
+}
+bool checkForRiver(const std::string& path){
+   ifstream infile;
+  string STRING;
+  bool riverFound = false;
+  infile.open (path);
+  if (infile.is_open()){
+    while (getline(infile,STRING)){
+        if(STRING.find("Current ") != string::npos){ 
+            riverFound = false;
+              }
+        if(STRING.find("*** RIVER ***") != string::npos){ 
+            riverFound = true;
+              }
+        if(STRING.find("won") != string::npos){ 
+            riverFound = false;
+              } 
+    }
+}
+  return riverFound;
 }
 vector<int> getCardsFlop(const std::string& path) {
   ifstream infile;
@@ -166,16 +225,15 @@ bool handInPlay(const std::string& path){
     while (getline(infile,STRING)){
         if(STRING.find("Current ") != string::npos){ 
             inPlay = true;
-            cout << inPlay << endl;
         }
         if(STRING.find("won") != string::npos){ 
             inPlay = false;
-            cout << inPlay << endl;
         }       
         }
     infile.close();
     
 }
+  return inPlay;
 }
 void convertHand(int a, int b){
     
