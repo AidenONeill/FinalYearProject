@@ -6,7 +6,7 @@
 using namespace std;
 
 double eval2Card(const std::string& cards){
-    
+
    unordered_map<std::string, int> handMap( {
        {"12,12,1",1},{"11,11,1",2},{"10,10,1",3},{"9,9,1",4},
        {"12,11,0",5},{"12,10,0",6},{"8,8,1",7},{"12,11,1",8},        

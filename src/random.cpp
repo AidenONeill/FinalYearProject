@@ -19,6 +19,7 @@ double getRandom()
      
      if(d<0.0 || d>1.0){
          getRandom();
+		 return 0;
      }
      else return d;
 }

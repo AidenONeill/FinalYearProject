@@ -40,18 +40,49 @@ vector<int> getCardHand(const std::string& path) {
   infile.open (path);
   if (infile.is_open()){
     while (getline(infile,STRING)){        
-            ret = STRING;            
+            ret = STRING;
     }
     infile.close();
   }
     int c1 ,c2;
     std::stringstream ss(ret);    
     ss >> c1 >> c2;
-    
-    vector<int> hand (2);
-    hand.at(0)= c1;
-    hand.at(1)= c2;    
-    return hand;  
+	cout << "C1" << c1 << endl;
+	cout << "C2" << c2 << endl;
+	if ((c1 < 0 || c1>51) || (c2 < 0 || c2>51)) {
+		return getCardHand(path);
+	}
+	else {
+		vector<int> hand(2);
+		hand.at(0) = c1;
+		hand.at(1) = c2;
+		return hand;
+
+	}
+	
+}
+bool validHand(const std::string& path) {
+	ifstream infile;
+	string STRING;
+	string ret;
+	infile.open(path);
+	if (infile.is_open()) {
+		while (getline(infile, STRING)) {
+			ret = STRING;
+		}
+		infile.close();
+	}
+	int c1, c2;
+	std::stringstream ss(ret);
+	ss >> c1 >> c2;
+	if ((c1 > 0 && c1<52) && (c2 >0 && c2
+		)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+	
 }
 bool checkForFlop(const std::string& path){
   ifstream infile;
@@ -198,7 +229,7 @@ vector<int> getCardsRiver(const std::string& path) {
 int getPotAmount(const std::string& path){
   ifstream infile;
   string STRING;
-  int pot;
+  int pot = 0;
   infile.open (path);
   if (infile.is_open()){
     while (getline(infile,STRING)){
@@ -219,7 +250,7 @@ int getPotAmount(const std::string& path){
 bool handInPlay(const std::string& path){
   ifstream infile;
   string STRING;
-  bool inPlay;
+  bool inPlay = false;
   infile.open (path);
   if (infile.is_open()){
     while (getline(infile,STRING)){
@@ -234,6 +265,7 @@ bool handInPlay(const std::string& path){
     
 }
   return inPlay;
+  
 }
 void convertHand(int a, int b){
     

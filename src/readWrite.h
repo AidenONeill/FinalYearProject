@@ -17,6 +17,7 @@ std::vector<int> getCardHand(const std::string& path);
 std::vector<int> getCardsFlop(const std::string& path);
 std::vector<int> getCardsTurn(const std::string& path);
 std::vector<int> getCardsRiver(const std::string& path);
+bool validHand(const std::string& path);
 bool checkForFlop(const std::string& path);
 bool checkForTurn(const std::string& path);
 bool checkForRiver(const std::string& path);
