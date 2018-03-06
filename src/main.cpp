@@ -13,94 +13,44 @@
 #include <iostream>
 #include <string>
 #include <thread>
-#include "handCount.h"
 #include "myBot.h"
 #include "readWrite.h"
 #include <atlstr.h>
+#include <boost\filesystem.hpp>
+#include "boost/date_time/posix_time/posix_time.hpp"
 using namespace std;
 
 int main() {
-	setHandCount(1);
-	//cout << getHandCount() << endl;
-	int handCount = getHandCount();
-	
-
-
-	HANDLE  ChangeHandle;
-	bool botfileChanged = false;
+	//string botPath = "C:/Users/aiden/Desktop/pokercasino-master/botfiles/casinoToBot0";
+	string botPath = "E:/botfiles/casinoToBot0";
+	boost::filesystem::path p("E:\\\\botfiles\\casinoToBot0");
+	//boost::filesystem::path p("C:\\\\Users\\aiden\\Desktop\\pokercasino-master\\botfiles\\casinoToBot0");
+	std::time_t t1 = boost::filesystem::last_write_time(p);
+	std::time_t n1 = time(0) * 1000;
+	int count = -1;
 	while (true)
 	{
-		handCount = getHandCount();
-		string boardPath = "";
-		if (handCount % 2 == 0) {
-			boardPath = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/playAreaPathEven.txt";
-		}
-		else if (handCount % 2 == 1) {
-			boardPath = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/playAreaPathOdd2.txt";
-		}
-		
-
-		ChangeHandle = FindFirstChangeNotification(_T("C:\\\Users\\aiden\\Desktop\\PokerTesterGCC-master\\simulationFiles\\bots"), FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE);
-		if (handInPlay(boardPath)) {
-			DWORD Wait = WaitForSingleObject(ChangeHandle, INFINITE);
-			if (Wait == WAIT_OBJECT_0) {
-				
-				botfileChanged = true;
-
-			}
-			else {
-				break;
-			}
-
-			if (botfileChanged) {
-				botfileChanged = false;
-
+		//cout << "t" << t1 << endl;
+		//cout << "t2" << boost::filesystem::last_write_time(p) << endl;
+		if (t1 < boost::filesystem::last_write_time(p)) {
+			count++;
+			cout << "Count: " << count << endl;
+			t1 = boost::filesystem::last_write_time(p);
+			if (count < 10) { // set this to the number of hands we are playing		
 				std::thread td1(myBotDecision);
-				std::thread td2(decideCallBot);
+				std::thread td2(decideRandomBot);
 				std::cout << "Started 2 threads. Waiting for them to finish..." << std::endl;
 				td1.join();
 				td2.join();
-				FindCloseChangeNotification(ChangeHandle);
-
+			}
+			else {
+				count = -1; // resets the count so I can play the same number of hands infinitely
 			}
 			
-
-			
-			setHandCount(getHandCount() + 1);
-			cout << getHandCount() << endl;
 		}
 	}
-
-
+	
 }
-
-//int main() {
-//
-//	HANDLE  ChangeHandle;
-//	bool botfileChanged = false;
-//	cout << validHand("C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/bots/bot1.txt") << endl;
-//	while (true)
-//	{
-//		botfileChanged = false;
-//		ChangeHandle = FindFirstChangeNotification(_T("C:\\\Users\\aiden\\Desktop\\PokerTesterGCC-master\\simulationFiles\\bots"), FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE);
-//
-//		DWORD Wait = WaitForSingleObject(ChangeHandle, INFINITE);
-//		if (Wait == WAIT_OBJECT_0) {
-//
-//			botfileChanged = true;
-//			FindCloseChangeNotification(ChangeHandle);
-//		}
-//		else {
-//			break;
-//		}
-//
-//		if (botfileChanged) {
-//			
-//			cout << "testing" << endl;
-//		}
-//
-//	}
-//}
 
 
 

@@ -12,25 +12,34 @@
 #include <iostream>
 #include <algorithm>
 #include "handStrength.h"
+#include "Casino/random.h"
 
 using namespace std;
 
-void decideFoldBot () {
-    string path = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/playAreaPathOdd.txt";
-    string botPath = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/bots/bot1.txt";
-    std::vector<int> hand (2); 
-    hand = getCardHand(path);
-    double handStr = eval2Card(convertHandToString(hand));    
-    if(handStr>18){                 //checks if the hand strength is greater than 18 out of 169 possible hands
-        writeToFile("f", botPath);
-    }
-    else{
-        writeToFile("c", botPath);
-    }
-    
-    
-    
-    
-   
+void decideFoldBot() {
+	string botPath = "C:/Users/aiden/Desktop/pokercasino-master/botfiles/casinoToBot3";
+	std::vector<int> hand(2);
+	hand = getCardHand(botPath);
+	double handStr = eval2Card(convertHandToString(hand));
+	string botToCasinoPath = "C:/Users/aiden/Desktop/pokercasino-master/botfiles/botToCasino3";
+	while (true) {
+
+		if (handInPlay(botPath)) {
+			double d = getRandom();
+			if (d <= 0.05) //calls 95% of the time
+			{
+				writeToFile("c", botToCasinoPath);
+				//            cout << "Call Bot c\n";
+			}
+			else // folds 5% of the time
+			{
+				writeToFile("f", botToCasinoPath);
+				//            cout << "Call Bot f\n";
+			}
+		}
+		else {
+			break;
+		}
+	}
 }
 

@@ -19,37 +19,32 @@ using namespace std;
 
 void decideRandomBot() {
 
-	string path = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/bots/bot2.txt";
-
-	int handCount = getHandCount();
-	string boardPath = "";
-	if (handCount % 2 == 0) {
-		boardPath = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/playAreaPathEven.txt";
-	}
-	else if (handCount % 2 == 1) {
-		boardPath = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/playAreaPathOdd2.txt";
-	}
-
+	string botPath = "C:/Users/aiden/Desktop/pokercasino-master/botfiles/casinoToBot2";
+	string botToCasinoPath = "C:/Users/aiden/Desktop/pokercasino-master/botfiles/botToCasino2";
 	while (true) {
 
-		double d = getRandom();
-		if (d >= 0.30) {                   //calls 70% of the time
-			writeToFile("c", path);
-	
+		if (handInPlay(botPath)) {
+			double d = getRandom();
+			if (d >= 0.30) {                   //calls 70% of the time
+				writeToFile("c", botToCasinoPath);
+
+			}
+			else if (d >= 0.10 && d < 0.30) {     // raises 20% of the time
+				writeToFile("r", botToCasinoPath);
+
+			}
+			else {                          // folds 10% of the time
+				writeToFile("f", botToCasinoPath);
+
+			}
+			
 		}
-		else if (d >= 0.10 && d < 0.30) {     // raises 20% of the time
-			writeToFile("r", path);
-		
-		}
-		else {                          // folds 10% of the time
-			writeToFile("f", path);
-		
-		}
-		if (!handInPlay(boardPath)) {
+		else{
 			break;
 		}
 	}
 }
+
 
 
 

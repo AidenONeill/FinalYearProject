@@ -23,38 +23,29 @@ using namespace std;
 
 
 void decideCallBot() {
-	string path = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/bots/bot2.txt";
-
-	//cout << getHandCount() << endl;
-	int handCount = getHandCount();
-	string boardPath = "";
-	if (handCount % 2 == 0) {
-		boardPath = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/playAreaPathEven.txt";
-	}
-	else if (handCount % 2 == 1) {
-		boardPath = "C:/Users/aiden/Desktop/PokerTesterGCC-master/simulationFiles/playAreaPathOdd2.txt";
-	}
-
-
-
+	string botPath = "C:/Users/aiden/Desktop/pokercasino-master/botfiles/casinoToBot1";
+	string botToCasinoPath = "C:/Users/aiden/Desktop/pokercasino-master/botfiles/botToCasino1";
 	while (true) {
-		
 
+		if (handInPlay(botPath)) {
 			double d = getRandom();
 			if (d >= 0.05) //calls 95% of the time
 			{
-				writeToFile("c", path);
+				writeToFile("c", botToCasinoPath);
 				//            cout << "Call Bot c\n";
 			}
 			else // folds 5% of the time
 			{
-				writeToFile("f", path);
+				writeToFile("f", botToCasinoPath);
 				//            cout << "Call Bot f\n";
 			}
-			if (!handInPlay(boardPath)) {
-				break;
-			}
+		}
+		else {
+			break;
+		}
 	}
 }
+		
+	
 
 

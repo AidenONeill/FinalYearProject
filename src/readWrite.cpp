@@ -9,6 +9,10 @@
 #include<vector>
 #include <chrono>
 #include <thread>
+#include <regex>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/range/algorithm/count.hpp>
 using namespace std;
 
 void writeToFile(const std::string& input ,const std::string& path) {
@@ -41,24 +45,36 @@ vector<int> getCardHand(const std::string& path) {
   if (infile.is_open()){
     while (getline(infile,STRING)){        
             ret = STRING;
+			
     }
     infile.close();
   }
     int c1 ,c2;
-    std::stringstream ss(ret);    
-    ss >> c1 >> c2;
-	cout << "C1" << c1 << endl;
-	cout << "C2" << c2 << endl;
-	if ((c1 < 0 || c1>51) || (c2 < 0 || c2>51)) {
-		return getCardHand(path);
+	std::regex rgx("A[0-9][0-9]?B[0-9][0-9]?");
+	smatch sm;
+	if (std::regex_search(ret, sm, rgx)) {
+		ret = sm[0];
+		ret.erase(std::remove(ret.begin(), ret.end(), 'A'), ret.end());
+		std::replace(ret.begin(), ret.end(), 'B', ' ');
+		std::stringstream ss(ret);
+		ss >> c1 >> c2;
+		cout << "C1" << c1 << endl;
+		cout << "C2" << c2 << endl;
+		if ((c1 < 0 || c1>51) || (c2 < 0 || c2>51)) {
+			return getCardHand(path);
+		}
+		else {
+			vector<int> hand(2);
+			hand.at(0) = c1;
+			hand.at(1) = c2;
+			return hand;
+
+		}
 	}
 	else {
-		vector<int> hand(2);
-		hand.at(0) = c1;
-		hand.at(1) = c2;
-		return hand;
-
+		return getCardHand(path);
 	}
+    
 	
 }
 bool validHand(const std::string& path) {
@@ -91,15 +107,14 @@ bool checkForFlop(const std::string& path){
   infile.open (path);
   if (infile.is_open()){
     while (getline(infile,STRING)){
-        if(STRING.find("Current ") != string::npos){ 
-            flopFound = false;
-              }
-        if(STRING.find("*** FLOP ***") != string::npos){ 
-            flopFound = true;
-              }
-        if(STRING.find("won") != string::npos){ 
-            flopFound = false;
-              } 
+		std::regex rgx("F[0-9][0-9]?F[0-9][0-9]?F[0-9][0-9]?F");
+		if (std::regex_search(STRING,rgx)) {
+			flopFound = true;
+		}
+		else {
+			flopFound = false;
+		}
+		infile.close();
     }
 }
   return flopFound;
@@ -111,15 +126,14 @@ bool checkForTurn(const std::string& path){
   infile.open (path);
   if (infile.is_open()){
     while (getline(infile,STRING)){
-        if(STRING.find("Current ") != string::npos){ 
-            turnFound = false;
-              }
-        if(STRING.find("*** TURN ***") != string::npos){ 
-            turnFound = true;
-              }
-        if(STRING.find("won") != string::npos){ 
-            turnFound = false;
-              } 
+		std::regex rgx("T[0-9][0-9]?T");
+		if (std::regex_search(STRING, rgx)) {
+			turnFound = true;
+		}
+		else {
+			turnFound = false;
+		}
+		infile.close();
     }
 }
   return turnFound;
@@ -131,15 +145,14 @@ bool checkForRiver(const std::string& path){
   infile.open (path);
   if (infile.is_open()){
     while (getline(infile,STRING)){
-        if(STRING.find("Current ") != string::npos){ 
-            riverFound = false;
-              }
-        if(STRING.find("*** RIVER ***") != string::npos){ 
-            riverFound = true;
-              }
-        if(STRING.find("won") != string::npos){ 
-            riverFound = false;
-              } 
+		std::regex rgx("R[0-9][0-9]?R");
+		if (std::regex_search(STRING, rgx)) {
+			riverFound = true;
+		}
+		else {
+			riverFound = false;
+		}
+		infile.close();
     }
 }
   return riverFound;
@@ -151,121 +164,153 @@ vector<int> getCardsFlop(const std::string& path) {
   infile.open (path);
   if (infile.is_open()){
     while (getline(infile,STRING)){
-        if(STRING.find("*** FLOP ***") != string::npos){ //change "bot1" to whatever bot file you are writing to.
             ret = STRING;
-              }   
+			cout << "Ret " << ret << endl;
+               
     }
     infile.close();
   }
     int c1 ,c2, c3;
-    string t;
-    ret.erase(std::remove(ret.begin(), ret.end(), '*'), ret.end());
-    ret.erase(std::remove(ret.begin(), ret.end(), '['), ret.end());
-    std::stringstream ss(ret);    
-    ss >> t >> c1 >> c2 >> c3;
-    
-    vector<int> hand (3);
-    hand.at(0)= c1;
-    hand.at(1)= c2;
-    hand.at(2)= c3;      
-    return hand;  
-}
-vector<int> getCardsTurn(const std::string& path) {
-  ifstream infile;
-  string STRING;
-  string ret;
-  infile.open (path);
-  if (infile.is_open()){
-    while (getline(infile,STRING)){
-        if(STRING.find("*** TURN ***") != string::npos){ //change "bot1" to whatever bot file you are writing to.
-            ret = STRING;            
-              }   
-    }
-    infile.close();
-  }
-    int c1 ,c2, c3, c4;
-    string t;
-    ret.erase(std::remove(ret.begin(), ret.end(), '*'), ret.end());
-    ret.erase(std::remove(ret.begin(), ret.end(), '['), ret.end());
-    std::stringstream ss(ret);    
-    ss >> t >> c1 >> c2 >> c3 >> c4;
-    
-    vector<int> hand (4);
-    hand.at(0)= c1;
-    hand.at(1)= c2;
-    hand.at(2)= c3;
-    hand.at(3)= c4;
-    return hand;  
-}
-vector<int> getCardsRiver(const std::string& path) {
-  ifstream infile;
-  string STRING;
-  string ret;
-  infile.open (path);
-  if (infile.is_open()){
-    while (getline(infile,STRING)){
-        if(STRING.find("*** RIVER ***") != string::npos){ //change "bot1" to whatever bot file you are writing to.
-            ret = STRING;
-              }   
-    }
-    infile.close();
-  }
-    int c1 ,c2, c3, c4, c5;
-    string t;
-    ret.erase(std::remove(ret.begin(), ret.end(), '*'), ret.end());
-    ret.erase(std::remove(ret.begin(), ret.end(), '['), ret.end());
-    std::stringstream ss(ret);    
-    ss >> t >> c1 >> c2 >> c3 >> c4 >> c5;
-    
-    vector<int> hand (5);
-    hand.at(0)= c1;
-    hand.at(1)= c2;
-    hand.at(2)= c3;
-    hand.at(3)= c4; 
-    hand.at(4)= c5; 
+	std::regex rgx("F[0-9][0-9]?F[0-9][0-9]?F[0-9][0-9]?F");
+	smatch sm;
+	if (std::regex_search(ret, sm, rgx)) {
+		ret = sm[0];
+		cout << "Ret " << ret << endl;
+		boost::replace_all(ret, "F", " ");
+	}
 
-    return hand;  
+std::stringstream ss(ret);
+ss >> c1 >> c2 >> c3;
+
+vector<int> hand(3);
+cout << "cFlop1: " << c1 << endl;
+cout << "cFlop2: " << c2 << endl;
+cout << "cFlop2: " << c3 << endl;
+hand.at(0) = c1;
+hand.at(1) = c2;
+hand.at(2) = c3;
+return hand;
 }
-int getPotAmount(const std::string& path){
-  ifstream infile;
-  string STRING;
-  int pot = 0;
-  infile.open (path);
-  if (infile.is_open()){
-    while (getline(infile,STRING)){
-        if(STRING.find("Current ") != string::npos){ 
-            pot=12;
-        }
-        if(STRING.find("called:") != string::npos){ 
-            pot += 4;
-        }
-        if(STRING.find("raised:") != string::npos){
-            pot += 4;
-        }
-        }
-    infile.close();
-  }
-    return pot;
+int getCardsTurn(const std::string& path) {
+	ifstream infile;
+	string STRING;
+	string ret;
+	infile.open(path);
+	if (infile.is_open()) {
+		while (getline(infile, STRING)) {
+			ret = STRING;
+		}
+		infile.close();
+	}
+	int c1;
+	std::regex rgx("T[0-9][0-9]?T");
+	smatch sm;
+	if (std::regex_search(ret, sm, rgx)) {
+		ret = sm[0];
+		cout << "Ret " << ret << endl;
+		boost::replace_all(ret, "T", " ");
+	}
+
+	std::stringstream ss(ret);
+	ss >> c1;
+	cout << "cTurn1: " << c1 << endl;
+	return c1;
+
 }
-bool handInPlay(const std::string& path){
-  ifstream infile;
-  string STRING;
-  bool inPlay = false;
-  infile.open (path);
-  if (infile.is_open()){
-    while (getline(infile,STRING)){
-        if(STRING.find("Current ") != string::npos){ 
-            inPlay = true;
-        }
-        if(STRING.find("won") != string::npos){ 
-            inPlay = false;
-        }       
-        }
-    infile.close();
-    
+int getCardsRiver(const std::string& path) {
+	ifstream infile;
+	string STRING;
+	string ret;
+	infile.open(path);
+	if (infile.is_open()) {
+		while (getline(infile, STRING)) {
+
+			ret = STRING;
+
+		}
+		infile.close();
+	}
+	int c1;
+	std::regex rgx("R[0-9][0-9]?R");
+	smatch sm;
+	if (std::regex_search(ret, sm, rgx)) {
+		ret = sm[0];
+		cout << "Ret " << ret << endl;
+		boost::replace_all(ret, "R", " ");
+	}
+
+	std::stringstream ss(ret);
+	ss >> c1;
+	cout << "cRiver1: " << c1 << endl;
+	return c1;
 }
-  return inPlay;
-  
+int getHandNumber(const std::string& path) {
+	ifstream infile;
+	string STRING;
+	string ret;
+	infile.open(path);
+	if (infile.is_open()) {
+		while (getline(infile, STRING)) {
+
+			ret = STRING;
+
+		}
+		infile.close();
+	}
+	int c1;
+	std::regex rgx("[0-9]?[0-9]D");
+	smatch sm;
+	if (std::regex_search(ret, sm, rgx)) {
+		ret = sm[0];
+		boost::replace_all(ret, "D", " ");
+	}
+	std::stringstream ss(ret);
+	ss >> c1;
+	return c1;
+}
+int getPotAmount(const std::string& path) {
+	ifstream infile;
+	string STRING;
+	int pot = 0;
+	infile.open(path);
+	if (infile.is_open()) {
+		while (getline(infile, STRING)) {
+			if (STRING.find("Current ") != string::npos) {
+				pot = 12;
+			}
+			if (STRING.find("called:") != string::npos) {
+				pot += 4;
+			}
+			if (STRING.find("raised:") != string::npos) {
+				pot += 4;
+			}
+		}
+		infile.close();
+	}
+	return pot;
+}
+bool handInPlay(const std::string& path) {
+	ifstream infile;
+	string STRING;
+	bool inPlay = true;
+	int nPlayers = 2;
+	infile.open(path);
+	if (infile.is_open()) {
+		while (getline(infile, STRING)) {
+			if (boost::count(STRING, 'f') >= nPlayers - 1) {
+
+				inPlay = false;
+			}
+			else {
+				//cout << "BOOB" << endl;
+				inPlay = true;
+			}
+			infile.close();
+
+		}
+		return inPlay;
+
+	}
 }
 void convertHand(int a, int b){
     
