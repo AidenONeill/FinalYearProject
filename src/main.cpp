@@ -32,16 +32,7 @@ int main() {
 		//cout << "t" << t1 << endl;
 		//cout << "t2" << boost::filesystem::last_write_time(p) << endl;
 		if (t1 < boost::filesystem::last_write_time(p)) {	
-				std::thread td1(myBotDecision);
-				std::thread td2(decideRandomBot);
-				std::thread td3(decideCallBot);
-				std::thread td4(decideFoldBot);
-				std::cout << "Started 2 threads. Waiting for them to finish..." << std::endl;
-				td1.join();
-				t1 = boost::filesystem::last_write_time(p);
-				td2.join();
-				td3.join();
-				td4.join();
+			myBotDecision();
 		}
 	}
 

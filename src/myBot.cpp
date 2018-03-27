@@ -22,7 +22,7 @@
 //Pair Twos                     8193
 //High Card A,K,Q,J,9           6466
 //High Card 2,3,4,5,7           4128
-//High Card 2                   4098 
+//High Card 2                   myBot 
 #include <cstdlib>
 #include "HandEval/omp/HandEvaluator.h"
 #include <iostream>
@@ -47,11 +47,6 @@ double normaliseHand(const double& x) {
 	double min = 4098;
 	return (x - min) / (max - min);
 }
-double getPotOdds(const double& x) {
-	double d = 4 / (x + 4);
-	return d;
-}
-
 void preFlopDecision(int handStr, const std::string& botPath) {
 	if (handStr < 35) {
 		writeToFile("r", botPath);
@@ -376,7 +371,7 @@ void myBotDecision() {
 	if (getHandNumber(casinoToBotPath) % 2 == 0) {
 		//p = ("C:\\\\botfiles\\handSummaryEven");
 		p = ("C:\\\\Users\\aiden\\Desktop\\pokercasino-master\\botfiles\\handSummaryEven");
-		cout << "Path Set " << p << endl;
+		//cout << "Path Set " << p << endl;
 		cout << "Hand Number: " << getHandNumber(casinoToBotPath) << endl;
 		t = boost::filesystem::last_write_time(p);
 		n = time(0) * 1000;
@@ -385,15 +380,15 @@ void myBotDecision() {
 		//p = ("C:\\\\botfiles\\handSummaryOdd");
 		p = ("C:\\\\Users\\aiden\\Desktop\\pokercasino-master\\botfiles\\handSummaryOdd");
 		cout << "Hand Number: " << getHandNumber(casinoToBotPath) << endl;
-		cout << "Path Set " << p << endl;
+		//cout << "Path Set " << p << endl;
 		t = boost::filesystem::last_write_time(p);
 		n = time(0) * 1000;
 	}
 	HandEvaluator eval;
 	Hand h = Hand::empty(); // Final hand must include empty() exactly once!
 	std::vector<int> board(5);		
-	cout << "Hand 1:" << hand.at(0) << endl;
-	cout << "Hand 2:" << hand.at(1) << endl;
+	//cout << "Hand 1:" << hand.at(0) << endl;
+	//cout << "Hand 2:" << hand.at(1) << endl;
 	bool flopFound = false;
 	bool turnFound = false;
 	bool riverFound = false;
@@ -412,38 +407,38 @@ void myBotDecision() {
 		}
 		if (!flopFound&& checkForFlop(casinoToBotPath)) {
 			flopFound = true;
-			cout << "Found Flop" << endl;
+			//cout << "Found Flop" << endl;
 			h = Hand::empty();
 			board = getCardsFlop(casinoToBotPath);
 			h += Hand(hand.at(0)) + Hand(hand.at(1)) + Hand(board.at(0)) + Hand(board.at(1)) + Hand(board.at(2)); //checks 5 cards
-			convertHand(hand.at(0), hand.at(1));
-			convertBoard(board.at(0), board.at(1), board.at(2), board.at(2), board.at(2));
-			cout << "Normalised Hand: " << normaliseHand(eval.evaluate(h)) << endl;
+			//convertHand(hand.at(0), hand.at(1));
+			//convertBoard(board.at(0), board.at(1), board.at(2), board.at(2), board.at(2));
+			//cout << "Normalised Hand: " << normaliseHand(eval.evaluate(h)) << endl;
 			flopDecision(normaliseHand(eval.evaluate(h)),hand,board,botToCasinoPath);
 		}
 		if (!turnFound && checkForTurn(casinoToBotPath)) {
 			turnFound = true;
-			cout << "Found Turn" << endl;
+			//cout << "Found Turn" << endl;
 			h = Hand::empty();
 			board.push_back(getCardsTurn(casinoToBotPath));
-			cout << board.at(0) << "!" << board.at(1) << "!" << board.at(2) << "!" << board.at(3) << "!" << endl;
+			//cout << board.at(0) << "!" << board.at(1) << "!" << board.at(2) << "!" << board.at(3) << "!" << endl;
 			h += Hand(hand.at(0)) + Hand(hand.at(1)) + Hand(board.at(0)) + Hand(board.at(1)) + Hand(board.at(2)) + Hand(board.at(3)); //checks 6 cards
-			convertHand(hand.at(0), hand.at(1));
-			convertBoard(board.at(0), board.at(1), board.at(2), board.at(3), board.at(3));
-			cout << "Normalised Hand: " << normaliseHand(eval.evaluate(h)) << endl;
+			//convertHand(hand.at(0), hand.at(1));
+			//convertBoard(board.at(0), board.at(1), board.at(2), board.at(3), board.at(3));
+			//cout << "Normalised Hand: " << normaliseHand(eval.evaluate(h)) << endl;
 		
 			turnDecision(normaliseHand(eval.evaluate(h)),hand,board,botToCasinoPath);
 		}
 		if (!riverFound && checkForRiver(casinoToBotPath)) {
 			riverFound = true;
-			cout << "Found River" << endl;
+			//cout << "Found River" << endl;
 			h = Hand::empty();
 			board.push_back(getCardsRiver(casinoToBotPath));
-			cout << board.at(0) << "!" << board.at(1) << "!" << board.at(2) << "!" << board.at(3) << "!" << board.at(4) << "!" << endl;
+			//cout << board.at(0) << "!" << board.at(1) << "!" << board.at(2) << "!" << board.at(3) << "!" << board.at(4) << "!" << endl;
 			h += Hand(hand.at(0)) + Hand(hand.at(1)) + Hand(board.at(0)) + Hand(board.at(1)) + Hand(board.at(2)) + Hand(board.at(3)) + Hand(board.at(4)); //checks 7 cards
-			convertHand(hand.at(0), hand.at(1));
-			convertBoard(board.at(0), board.at(1), board.at(2), board.at(3), board.at(4));
-			cout << "Normalised Hand: " << normaliseHand(eval.evaluate(h)) << endl;
+			//convertHand(hand.at(0), hand.at(1));
+			//convertBoard(board.at(0), board.at(1), board.at(2), board.at(3), board.at(4));
+			//cout << "Normalised Hand: " << normaliseHand(eval.evaluate(h)) << endl;
 			t = boost::filesystem::last_write_time(p);
 			riverDecision(normaliseHand(eval.evaluate(h)),hand,board,botToCasinoPath);
 		}
